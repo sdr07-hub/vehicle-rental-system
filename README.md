@@ -102,6 +102,6 @@ This section will be updated after the Spring Boot project and MySQL database ar
 |---|---|
 | GitHub repository | Created |
 | Team branches | Created |
-| IntelliJ project | To be created |
+| IntelliJ project | Created - Spring Boot and Maven setup added |
 | MySQL database | To be created |
 | CRUD modules | Planned |
