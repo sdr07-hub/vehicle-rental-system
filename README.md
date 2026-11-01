@@ -102,6 +102,24 @@ This section will be updated after the Spring Boot project and MySQL database ar
 |---|---|
 | GitHub repository | Created |
 | Team branches | Created |
-| IntelliJ project | Created - Spring Boot and Maven setup added |
-| MySQL database | To be created |
+| IntelliJ project | Created - Spring Boot, Maven, JSP home page |
+| MySQL database | Created - 7 tables (see database/schema.sql) |
 | CRUD modules | Planned |
+
+## Setup for team members (one-time)
+
+1. Clone the repository in IntelliJ: File > New > Project from Version Control > paste the GitHub URL.
+2. Switch to your own branch from the branch menu at the top left (for example feature/customers).
+3. Maven setting: File > Settings > Build, Execution, Deployment > Build Tools > Maven. Set "Maven home path" to "Bundled (Maven 3)", click OK, then reload Maven.
+4. Create the database: open database/schema.sql in MySQL Workbench (connected as root) and click the lightning bolt. Run this only once, on a fresh setup, because it recreates the tables empty.
+5. Create the app database user in MySQL Workbench (choose your own password):
+   CREATE USER IF NOT EXISTS 'vehicle_app'@'localhost' IDENTIFIED BY 'YOUR_PASSWORD';
+   ALTER USER 'vehicle_app'@'localhost' IDENTIFIED BY 'YOUR_PASSWORD';
+   GRANT ALL PRIVILEGES ON vehicle_rental_db.* TO 'vehicle_app'@'localhost';
+   FLUSH PRIVILEGES;
+6. Create your private password file: in src/main/resources, create db-local.properties with this one line:
+   spring.datasource.password=YOUR_PASSWORD
+   This file is ignored by Git. Never commit it.
+7. Run VehicleRentalSystemApplication with the green Run button and open http://localhost:8081
+
+If you see "Port 8081 was already in use", stop the old run (red square) and run again.
