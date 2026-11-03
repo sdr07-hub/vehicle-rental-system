@@ -4,6 +4,7 @@ import com.vehiclerental.model.Vehicle;
 import com.vehiclerental.model.VehicleFactory;
 import com.vehiclerental.model.VehicleForm;
 import com.vehiclerental.repository.VehicleRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,8 +70,17 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     @Transactional
     public void delete(Long id) {
+        // Lock the parent row so FK-backed booking inserts cannot race the reference check.
+        vehicleRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new IllegalArgumentException("Vehicle not found."));
+        if (vehicleRepository.countBookingVehicleForeignKeys() == 0) {
+            throw new IllegalStateException("The bookings.vehicle_id foreign key is missing.");
+        }
+        // The existing schema uses ON DELETE SET NULL, so explicitly reject referenced vehicles.
+        if (vehicleRepository.countBookingReferences(id) > 0) {
+            throw new DataIntegrityViolationException("This vehicle is referenced by bookings.");
+        }
         vehicleRepository.deleteById(id);
-        // The shared bookings FK must use RESTRICT/NO ACTION, never ON DELETE SET NULL.
         vehicleRepository.flush();
     }
 

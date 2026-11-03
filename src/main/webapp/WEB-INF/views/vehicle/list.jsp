@@ -2,11 +2,25 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <c:set var="pageTitle" value="Vehicles" scope="request" />
-<jsp:include page="/WEB-INF/views/common/header.jsp" />
-
+<c:url var="homeUrl" value="/" />
 <c:url var="vehiclesUrl" value="/vehicles" />
 <c:url var="newVehicleUrl" value="/vehicles/new" />
-<section class="container py-4" aria-labelledby="vehiclesHeading">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><c:out value="${pageTitle}" /> | Vehicle Rental System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light d-flex flex-column min-vh-100">
+<nav class="navbar navbar-dark bg-dark" aria-label="Main navigation">
+    <div class="container d-flex flex-wrap gap-2">
+        <a class="navbar-brand fw-bold" href="${fn:escapeXml(homeUrl)}">Vehicle Rental System</a>
+        <a class="nav-link text-white" href="${fn:escapeXml(vehiclesUrl)}" aria-current="page">Vehicles</a>
+    </div>
+</nav>
+<main class="container py-4 flex-grow-1" aria-labelledby="vehiclesHeading">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <h1 id="vehiclesHeading" class="mb-0">Vehicles</h1>
         <a href="${fn:escapeXml(newVehicleUrl)}" class="btn btn-primary">+ Add Vehicle</a>
@@ -89,6 +103,7 @@
         </c:otherwise>
     </c:choose>
     <p class="text-muted mt-3">Total vehicles: <c:out value="${fn:length(vehicles)}" /></p>
-</section>
-
-<jsp:include page="/WEB-INF/views/common/footer.jsp" />
+</main>
+<footer class="bg-dark text-white text-center py-3">Vehicle Rental System</footer>
+</body>
+</html>

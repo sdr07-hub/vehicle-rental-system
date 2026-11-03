@@ -4,6 +4,7 @@ import com.vehiclerental.model.Car;
 import com.vehiclerental.model.Suv;
 import com.vehiclerental.model.Van;
 import com.vehiclerental.model.Vehicle;
+import com.vehiclerental.service.VehicleService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ class VehicleRepositoryMySqlTest {
 
     @Autowired
     private JdbcTemplate jdbc;
+
+    @Autowired
+    private VehicleService service;
 
     @Test
     void allSubtypesShareOneTableWithTheirDiscriminators() {
@@ -77,17 +81,15 @@ class VehicleRepositoryMySqlTest {
     void bookingOnePreventsDeletingTheDocumentedSampleCar() {
         Long id = jdbc.queryForObject("SELECT vehicle_id FROM vehicles WHERE registration_number = 'CAB-1234'", Long.class);
         assertThat(jdbc.queryForObject("SELECT vehicle_id FROM bookings WHERE booking_id = 1", Long.class)).isEqualTo(id);
-        assertThatThrownBy(() -> {
-            repository.deleteById(id);
-            repository.flush();
-        }).isInstanceOf(DataIntegrityViolationException.class);
+        assertThat(repository.countBookingVehicleForeignKeys()).isPositive();
+        assertThatThrownBy(() -> service.delete(id)).isInstanceOf(DataIntegrityViolationException.class);
+        assertThat(jdbc.queryForObject("SELECT vehicle_id FROM bookings WHERE booking_id = 1", Long.class)).isEqualTo(id);
     }
 
     @Test
     void unreferencedVehicleCanBeDeleted() {
         Vehicle car = save(new Car(), "ZT-9001", "Axio", 5);
-        repository.deleteById(car.getVehicleId());
-        repository.flush();
+        service.delete(car.getVehicleId());
         assertThat(repository.findById(car.getVehicleId())).isEmpty();
     }
 

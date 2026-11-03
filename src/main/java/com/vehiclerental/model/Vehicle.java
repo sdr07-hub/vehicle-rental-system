@@ -13,12 +13,12 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 
-/** Common state for all vehicle types; the shared BaseEntity is supplied by the team leader. */
+/** Common persistent state for all vehicle types, independent of the team's shared user models. */
 @Entity
 @Table(name = "vehicles")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "vehicle_type", discriminatorType = DiscriminatorType.STRING, length = 10)
-public abstract class Vehicle extends BaseEntity {
+public abstract class Vehicle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

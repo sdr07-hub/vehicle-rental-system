@@ -105,6 +105,8 @@ class VehicleServiceImplTest {
 
     @Test
     void deleteFlushesAndPropagatesBookingConstraintFailures() {
+        when(repository.findByIdForUpdate(7L)).thenReturn(Optional.of(new Car()));
+        when(repository.countBookingVehicleForeignKeys()).thenReturn(1L);
         doThrow(new DataIntegrityViolationException("booking foreign key")).when(repository).flush();
         assertThatThrownBy(() -> service.delete(7L)).isInstanceOf(DataIntegrityViolationException.class);
         var order = inOrder(repository);
@@ -114,10 +116,43 @@ class VehicleServiceImplTest {
 
     @Test
     void unreferencedVehicleIsDeletedAndFlushed() {
+        when(repository.findByIdForUpdate(8L)).thenReturn(Optional.of(new Car()));
+        when(repository.countBookingVehicleForeignKeys()).thenReturn(1L);
         service.delete(8L);
         var order = inOrder(repository);
+        order.verify(repository).findByIdForUpdate(8L);
+        order.verify(repository).countBookingVehicleForeignKeys();
+        order.verify(repository).countBookingReferences(8L);
         order.verify(repository).deleteById(8L);
         order.verify(repository).flush();
+    }
+
+    @Test
+    void referencedVehicleIsProtectedEvenWithASetNullForeignKey() {
+        when(repository.findByIdForUpdate(7L)).thenReturn(Optional.of(new Car()));
+        when(repository.countBookingVehicleForeignKeys()).thenReturn(1L);
+        when(repository.countBookingReferences(7L)).thenReturn(1L);
+        assertThatThrownBy(() -> service.delete(7L)).isInstanceOf(DataIntegrityViolationException.class);
+        verify(repository, never()).deleteById(any());
+        verify(repository, never()).flush();
+    }
+
+    @Test
+    void missingBookingRelationshipBlocksDeletion() {
+        when(repository.findByIdForUpdate(7L)).thenReturn(Optional.of(new Car()));
+        when(repository.countBookingVehicleForeignKeys()).thenReturn(0L);
+        assertThatThrownBy(() -> service.delete(7L)).isInstanceOf(IllegalStateException.class)
+                .hasMessage("The bookings.vehicle_id foreign key is missing.");
+        verify(repository, never()).countBookingReferences(any());
+        verify(repository, never()).deleteById(any());
+    }
+
+    @Test
+    void vehicleRemovedBeforeLockingIsReportedAsMissing() {
+        when(repository.findByIdForUpdate(7L)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> service.delete(7L)).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Vehicle not found.");
+        verify(repository, never()).deleteById(any());
     }
 
     private VehicleForm form() {

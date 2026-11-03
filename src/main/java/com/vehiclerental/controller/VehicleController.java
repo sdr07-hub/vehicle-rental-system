@@ -8,6 +8,7 @@ import com.vehiclerental.service.VehicleService;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -127,6 +128,11 @@ public class VehicleController {
         } catch (DataIntegrityViolationException exception) {
             redirectAttributes.addFlashAttribute("errorMessage",
                     "This vehicle is used in bookings, so it cannot be removed. Set its status to 'Under maintenance' instead.");
+        } catch (IllegalStateException | InvalidDataAccessResourceUsageException exception) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Vehicle removal is unavailable because the booking database relationship could not be verified. Please check the database setup.");
+        } catch (IllegalArgumentException exception) {
+            return vehicleNotFound(redirectAttributes);
         }
         return "redirect:/vehicles";
     }
@@ -171,7 +177,7 @@ public class VehicleController {
     }
 
     private String showInvalidForm(Model model, BindingResult bindingResult, boolean editMode, Long vehicleId) {
-        // Shared FormErrors is absent; keep this fallback private to the vehicle module.
+        // Build field messages locally; no shared FormErrors utility is required.
         Map<String, String> errors = new LinkedHashMap<>();
         for (FieldError error : bindingResult.getFieldErrors()) {
             String message = error.isBindingFailure() ? switch (error.getField()) {

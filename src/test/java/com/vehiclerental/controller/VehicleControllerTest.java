@@ -200,6 +200,16 @@ class VehicleControllerTest {
     }
 
     @Test
+    void missingBookingRelationshipDisplaysSetupErrorWithoutClaimingSuccess() throws Exception {
+        when(service.findById(1L)).thenReturn(Optional.of(car()));
+        doThrow(new IllegalStateException("The bookings.vehicle_id foreign key is missing.")).when(service).delete(1L);
+        mvc.perform(post("/vehicles/1/delete")).andExpect(redirectedUrl("/vehicles"))
+                .andExpect(flash().attribute("errorMessage",
+                        "Vehicle removal is unavailable because the booking database relationship could not be verified. Please check the database setup."))
+                .andExpect(flash().attributeCount(1));
+    }
+
+    @Test
     void deleteUnreferencedVehicleDisplaysSuccess() throws Exception {
         when(service.findById(1L)).thenReturn(Optional.of(car()));
         mvc.perform(post("/vehicles/1/delete")).andExpect(redirectedUrl("/vehicles"))
