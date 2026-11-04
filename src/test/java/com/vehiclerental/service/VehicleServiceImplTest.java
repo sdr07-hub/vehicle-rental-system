@@ -12,6 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 
@@ -106,7 +107,9 @@ class VehicleServiceImplTest {
     @Test
     void deleteFlushesAndPropagatesBookingConstraintFailures() {
         when(repository.findByIdForUpdate(7L)).thenReturn(Optional.of(new Car()));
-        when(repository.countBookingVehicleForeignKeys()).thenReturn(1L);
+        when(repository.countBookingTables()).thenReturn(1L);
+        when(repository.countBookingVehicleIdColumns()).thenReturn(1L);
+        when(repository.countBookingReferences(7L)).thenReturn(0L);
         doThrow(new DataIntegrityViolationException("booking foreign key")).when(repository).flush();
         assertThatThrownBy(() -> service.delete(7L)).isInstanceOf(DataIntegrityViolationException.class);
         var order = inOrder(repository);
@@ -115,13 +118,26 @@ class VehicleServiceImplTest {
     }
 
     @Test
-    void unreferencedVehicleIsDeletedAndFlushed() {
+    void missingBookingsTableAllowsDeletion() {
         when(repository.findByIdForUpdate(8L)).thenReturn(Optional.of(new Car()));
-        when(repository.countBookingVehicleForeignKeys()).thenReturn(1L);
+        when(repository.countBookingTables()).thenReturn(0L);
+        service.delete(8L);
+        verify(repository).deleteById(8L);
+        verify(repository).flush();
+        verify(repository, never()).countBookingVehicleIdColumns();
+        verify(repository, never()).countBookingReferences(any());
+    }
+
+    @Test
+    void unreferencedVehicleIsDeletedWithoutRequiringForeignKey() {
+        when(repository.findByIdForUpdate(8L)).thenReturn(Optional.of(new Car()));
+        when(repository.countBookingTables()).thenReturn(1L);
+        when(repository.countBookingVehicleIdColumns()).thenReturn(1L);
         service.delete(8L);
         var order = inOrder(repository);
         order.verify(repository).findByIdForUpdate(8L);
-        order.verify(repository).countBookingVehicleForeignKeys();
+        order.verify(repository).countBookingTables();
+        order.verify(repository).countBookingVehicleIdColumns();
         order.verify(repository).countBookingReferences(8L);
         order.verify(repository).deleteById(8L);
         order.verify(repository).flush();
@@ -130,7 +146,8 @@ class VehicleServiceImplTest {
     @Test
     void referencedVehicleIsProtectedEvenWithASetNullForeignKey() {
         when(repository.findByIdForUpdate(7L)).thenReturn(Optional.of(new Car()));
-        when(repository.countBookingVehicleForeignKeys()).thenReturn(1L);
+        when(repository.countBookingTables()).thenReturn(1L);
+        when(repository.countBookingVehicleIdColumns()).thenReturn(1L);
         when(repository.countBookingReferences(7L)).thenReturn(1L);
         assertThatThrownBy(() -> service.delete(7L)).isInstanceOf(DataIntegrityViolationException.class);
         verify(repository, never()).deleteById(any());
@@ -138,12 +155,21 @@ class VehicleServiceImplTest {
     }
 
     @Test
-    void missingBookingRelationshipBlocksDeletion() {
+    void existingBookingsTableWithoutVehicleColumnBlocksDeletion() {
         when(repository.findByIdForUpdate(7L)).thenReturn(Optional.of(new Car()));
-        when(repository.countBookingVehicleForeignKeys()).thenReturn(0L);
+        when(repository.countBookingTables()).thenReturn(1L);
+        when(repository.countBookingVehicleIdColumns()).thenReturn(0L);
         assertThatThrownBy(() -> service.delete(7L)).isInstanceOf(IllegalStateException.class)
-                .hasMessage("The bookings.vehicle_id foreign key is missing.");
+                .hasMessage("The bookings.vehicle_id column could not be verified.");
         verify(repository, never()).countBookingReferences(any());
+        verify(repository, never()).deleteById(any());
+    }
+
+    @Test
+    void cannotVerifyBookingsTableBlocksDeletion() {
+        when(repository.findByIdForUpdate(7L)).thenReturn(Optional.of(new Car()));
+        when(repository.countBookingTables()).thenThrow(new DataAccessResourceFailureException("Unable to inspect booking schema"));
+        assertThatThrownBy(() -> service.delete(7L)).isInstanceOf(DataAccessResourceFailureException.class);
         verify(repository, never()).deleteById(any());
     }
 

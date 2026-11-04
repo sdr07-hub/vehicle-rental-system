@@ -7,8 +7,8 @@ import com.vehiclerental.model.VehicleStatus;
 import com.vehiclerental.service.VehicleService;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -128,7 +128,7 @@ public class VehicleController {
         } catch (DataIntegrityViolationException exception) {
             redirectAttributes.addFlashAttribute("errorMessage",
                     "This vehicle is used in bookings, so it cannot be removed. Set its status to 'Under maintenance' instead.");
-        } catch (IllegalStateException | InvalidDataAccessResourceUsageException exception) {
+        } catch (IllegalStateException | DataAccessException exception) {
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Vehicle removal is unavailable because the booking database relationship could not be verified. Please check the database setup.");
         } catch (IllegalArgumentException exception) {

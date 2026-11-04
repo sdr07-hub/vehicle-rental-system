@@ -73,12 +73,13 @@ public class VehicleServiceImpl implements VehicleService {
         // Lock the parent row so FK-backed booking inserts cannot race the reference check.
         vehicleRepository.findByIdForUpdate(id)
                 .orElseThrow(() -> new IllegalArgumentException("Vehicle not found."));
-        if (vehicleRepository.countBookingVehicleForeignKeys() == 0) {
-            throw new IllegalStateException("The bookings.vehicle_id foreign key is missing.");
-        }
-        // The existing schema uses ON DELETE SET NULL, so explicitly reject referenced vehicles.
-        if (vehicleRepository.countBookingReferences(id) > 0) {
-            throw new DataIntegrityViolationException("This vehicle is referenced by bookings.");
+        if (vehicleRepository.countBookingTables() > 0) {
+            if (vehicleRepository.countBookingVehicleIdColumns() == 0) {
+                throw new IllegalStateException("The bookings.vehicle_id column could not be verified.");
+            }
+            if (vehicleRepository.countBookingReferences(id) > 0) {
+                throw new DataIntegrityViolationException("This vehicle is referenced by bookings.");
+            }
         }
         vehicleRepository.deleteById(id);
         vehicleRepository.flush();

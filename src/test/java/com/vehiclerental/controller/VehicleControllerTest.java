@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -202,11 +203,20 @@ class VehicleControllerTest {
     @Test
     void missingBookingRelationshipDisplaysSetupErrorWithoutClaimingSuccess() throws Exception {
         when(service.findById(1L)).thenReturn(Optional.of(car()));
-        doThrow(new IllegalStateException("The bookings.vehicle_id foreign key is missing.")).when(service).delete(1L);
+        doThrow(new IllegalStateException("The bookings.vehicle_id column could not be verified.")).when(service).delete(1L);
         mvc.perform(post("/vehicles/1/delete")).andExpect(redirectedUrl("/vehicles"))
                 .andExpect(flash().attribute("errorMessage",
                         "Vehicle removal is unavailable because the booking database relationship could not be verified. Please check the database setup."))
                 .andExpect(flash().attributeCount(1));
+    }
+
+    @Test
+    void databaseVerificationFailureDisplaysSetupError() throws Exception {
+        when(service.findById(1L)).thenReturn(Optional.of(car()));
+        doThrow(new DataAccessResourceFailureException("Unable to inspect booking schema")).when(service).delete(1L);
+        mvc.perform(post("/vehicles/1/delete")).andExpect(redirectedUrl("/vehicles"))
+                .andExpect(flash().attribute("errorMessage",
+                        "Vehicle removal is unavailable because the booking database relationship could not be verified. Please check the database setup."));
     }
 
     @Test

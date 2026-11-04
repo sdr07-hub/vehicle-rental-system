@@ -13,6 +13,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -81,14 +84,19 @@ class VehicleRepositoryMySqlTest {
     void bookingOnePreventsDeletingTheDocumentedSampleCar() {
         Long id = jdbc.queryForObject("SELECT vehicle_id FROM vehicles WHERE registration_number = 'CAB-1234'", Long.class);
         assertThat(jdbc.queryForObject("SELECT vehicle_id FROM bookings WHERE booking_id = 1", Long.class)).isEqualTo(id);
-        assertThat(repository.countBookingVehicleForeignKeys()).isPositive();
+        assertThat(repository.countBookingTables()).isPositive();
+        assertThat(repository.countBookingVehicleIdColumns()).isPositive();
         assertThatThrownBy(() -> service.delete(id)).isInstanceOf(DataIntegrityViolationException.class);
         assertThat(jdbc.queryForObject("SELECT vehicle_id FROM bookings WHERE booking_id = 1", Long.class)).isEqualTo(id);
     }
 
     @Test
     void unreferencedVehicleCanBeDeleted() {
-        Vehicle car = save(new Car(), "ZT-9001", "Axio", 5);
+        String registration;
+        do {
+            registration = "QAT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(Locale.ROOT);
+        } while (repository.existsByRegistrationNumberIgnoreCase(registration));
+        Vehicle car = save(new Car(), registration, "Axio", 5);
         service.delete(car.getVehicleId());
         assertThat(repository.findById(car.getVehicleId())).isEmpty();
     }

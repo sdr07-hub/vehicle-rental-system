@@ -27,10 +27,16 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     long countBookingReferences(@Param("id") Long id);
 
     @Query(value = """
-            SELECT COUNT(*) FROM information_schema.KEY_COLUMN_USAGE
-            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' AND COLUMN_NAME = 'vehicle_id'
-              AND REFERENCED_TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME = 'vehicles'
-              AND REFERENCED_COLUMN_NAME = 'vehicle_id'
+            SELECT EXISTS (
+                SELECT 1 FROM information_schema.TABLES
+                WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings'
+            )
             """, nativeQuery = true)
-    long countBookingVehicleForeignKeys();
+    long countBookingTables();
+
+    @Query(value = """
+            SELECT COUNT(*) FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' AND COLUMN_NAME = 'vehicle_id'
+            """, nativeQuery = true)
+    long countBookingVehicleIdColumns();
 }
