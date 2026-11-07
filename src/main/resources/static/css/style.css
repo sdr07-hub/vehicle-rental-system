@@ -1,0 +1,33 @@
+/* Shared styles for the whole website (Bootstrap does most of the work). */
+
+/* Make tables easier to read on small screens */
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+/* Buttons inside table rows stay on one line */
+.action-buttons {
+    white-space: nowrap;
+}
+
+/* Small grey text used for hints under form fields */
+.form-hint {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Cards used on mobile-friendly pages (for example the driver's trip page) */
+.trip-card {
+    border-left: 4px solid #0d6efd;
+}
+
+/* Page headings with a button on the right */
+.page-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
