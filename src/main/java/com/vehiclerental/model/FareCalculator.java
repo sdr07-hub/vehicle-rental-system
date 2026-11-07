@@ -1,4 +1,4 @@
-
+package com.vehiclerental.model;
 import java.math.BigDecimal;
 
 /**
