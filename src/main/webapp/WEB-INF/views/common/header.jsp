@@ -28,6 +28,10 @@
                 <li class="nav-item"><a class="nav-link" href="/bookings">Bookings</a></li>
                 <li class="nav-item"><a class="nav-link" href="/feedback">Feedback</a></li>
                 <li class="nav-item"><a class="nav-link" href="/admin">Admin</a></li>
+                <c:if test="${not empty sessionScope.loggedInName}">
+                    <li class="nav-item"><span class="nav-link text-warning">${sessionScope.loggedInName}</span></li>
+                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                </c:if>
             </ul>
         </div>
     </div>
