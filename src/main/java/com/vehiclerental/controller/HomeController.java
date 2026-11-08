@@ -1,18 +1,18 @@
 package com.vehiclerental.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-/**
- * Handles the main landing page of the application.
- */
 @Controller
 public class HomeController {
 
-    // Runs when someone opens http://localhost:8081/
     @GetMapping("/")
-    public String home() {
-        // "home" means: show /WEB-INF/views/home.jsp
+    public String home(HttpSession session) {
+        // Nobody sees the home page until they have logged in
+        if (session.getAttribute("loggedInUserId") == null) {
+            return "redirect:/login";
+        }
         return "home";
     }
 }
