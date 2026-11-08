@@ -2,6 +2,8 @@ package com.vehiclerental.repository;
 
 import com.vehiclerental.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import com.vehiclerental.model.User;
+import java.util.Optional;
 
 /**
  * Shared repository for ALL users (customers, drivers and admins).
@@ -14,4 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // true if a DIFFERENT user (not this id) already has this email - used when editing
     boolean existsByEmailIgnoreCaseAndUserIdNot(String email, Long userId);
+
+
+    Optional<User> findByEmailIgnoreCase(String email);
 }
