@@ -1,11 +1,9 @@
-package com.vehiclerental.controller;
+package com.vehiclerental.auth;
 
 import com.vehiclerental.model.Customer;
 import com.vehiclerental.model.User;
-import com.vehiclerental.service.AuthService;
 import com.vehiclerental.service.CustomerService;
 import com.vehiclerental.util.FormErrors;
-import com.vehiclerental.util.SessionUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -72,7 +70,11 @@ public class AuthController {
 
     // ---------- SIGN UP (new customers) ----------
     @GetMapping("/signup")
-    public String showSignup(Model model) {
+    public String showSignup(HttpSession session, Model model) {
+        SessionUser current = SessionUser.from(session);
+        if (current != null) {
+            return "redirect:" + current.getHomeUrl(); // already logged in: no need to sign up again
+        }
         model.addAttribute("customer", new Customer());
         return "auth/signup";
     }

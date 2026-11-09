@@ -59,7 +59,6 @@
                         <li class="nav-item"><a class="nav-link" href="/drivers">Drivers</a></li>
                         <li class="nav-item"><a class="nav-link" href="/vehicles">Vehicles</a></li>
                         <li class="nav-item"><a class="nav-link" href="/bookings">Bookings</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/feedback">Feedback</a></li>
                     </c:otherwise>
                 </c:choose>
 

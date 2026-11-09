@@ -50,7 +50,6 @@
     <a href="/drivers" class="list-group-item list-group-item-action">Drivers</a>
     <a href="/vehicles" class="list-group-item list-group-item-action">Vehicles</a>
     <a href="/bookings" class="list-group-item list-group-item-action">Bookings</a>
-    <a href="/feedback" class="list-group-item list-group-item-action">Feedback and complaints</a>
 </div>
 
 <%@ include file="/WEB-INF/views/common/footer.jsp" %>

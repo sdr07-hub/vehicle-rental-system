@@ -1,4 +1,4 @@
-package com.vehiclerental.model;
+package com.vehiclerental.portal.model;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;

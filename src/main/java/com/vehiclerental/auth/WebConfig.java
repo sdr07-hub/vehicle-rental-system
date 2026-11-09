@@ -21,7 +21,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/driver/**");
 
         registry.addInterceptor(new RoleInterceptor(UserRole.ADMIN))
-                .addPathPatterns("/admin/**", "/bookings/**", "/feedback/**"); // management pages are for admins only
+                .addPathPatterns("/admin/**", "/bookings/**"); // management pages are for admins only
         // Optional: also lock "/customers/**" and "/vehicles/**" the same way (not "/drivers/**": drivers use its trips page)
     }
 }

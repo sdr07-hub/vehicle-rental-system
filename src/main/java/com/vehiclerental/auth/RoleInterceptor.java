@@ -1,7 +1,6 @@
-package com.vehiclerental.config;
+package com.vehiclerental.auth;
 
 import com.vehiclerental.model.UserRole;
-import com.vehiclerental.util.SessionUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;

@@ -1,4 +1,4 @@
-package com.vehiclerental.util;
+package com.vehiclerental.auth;
 
 import com.vehiclerental.model.User;
 import com.vehiclerental.model.UserRole;
