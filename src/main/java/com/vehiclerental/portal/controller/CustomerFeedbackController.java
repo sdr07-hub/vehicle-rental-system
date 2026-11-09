@@ -1,6 +1,5 @@
 package com.vehiclerental.portal.controller;
 
-import com.vehiclerental.util.SessionUser;
 import com.vehiclerental.model.Feedback;
 import com.vehiclerental.model.FeedbackType;
 import com.vehiclerental.portal.model.FeedbackForm;
@@ -22,7 +21,7 @@ import java.util.List;
 
 /**
  * Feedback pages for a logged-in customer, in the new interface.
- * RoleInterceptor already protects /customer/** for customers only.
+ * FeedbackWebConfig protects the customer feedback routes for customers only.
  * Saving and the priority rules are done by Member 6's FeedbackService (reuse, not a copy).
  *
  *  GET  /customer/feedback               -> my feedback and the admin's replies
@@ -109,6 +108,6 @@ public class CustomerFeedbackController {
     }
 
     private Long currentUserId(HttpSession session) {
-        return SessionUser.from(session).getUserId(); // never null here: RoleInterceptor checked it
+        return (Long) session.getAttribute("loggedInUserId"); // checked by FeedbackWebConfig
     }
 }
