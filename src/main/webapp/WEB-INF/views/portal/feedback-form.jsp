@@ -41,13 +41,17 @@
                         </c:forEach>
                     </div>
 
+                    <c:if test="${not empty errors.feedbackType}">
+                        <div class="text-danger small mb-3"><c:out value="${errors.feedbackType}"/></div>
+                    </c:if>
+
                     <%-- 2. Rating: five buttons, 5 = best --%>
                     <label class="form-label fw-semibold">2. Your rating</label>
                     <div class="d-flex flex-wrap gap-2 mb-1">
                         <c:forEach var="r" begin="1" end="5">
                             <input type="radio" class="btn-check" name="rating" id="rating-${r}" value="${r}"
                                    ${feedbackForm.rating == r ? 'checked' : ''}>
-                            <label class="btn btn-outline-warning" for="rating-${r}">${r} <i class="bi bi-star-fill"></i></label>
+                            <label class="btn btn-outline-warning" for="rating-${r}">${r} &#9733;</label>
                         </c:forEach>
                     </div>
                     <div class="form-hint mb-4">1 = very poor, 5 = excellent.</div>

@@ -60,7 +60,7 @@ public class CustomerFeedbackController {
         if (rideId != null) {
             if (!feedbackService.bookingBelongsToCustomer(rideId, currentUserId(session))) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Ride not found.");
-                return "redirect:/customer/rides";
+                return "redirect:/customer/feedback";
             }
             form.setBookingId(rideId);
             form.setSubject("Ride #" + rideId);

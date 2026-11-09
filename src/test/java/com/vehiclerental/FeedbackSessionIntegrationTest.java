@@ -37,11 +37,11 @@ class FeedbackSessionIntegrationTest {
   var nimal=session(new Customer(),10);var driver=session(new Driver(),20);var administrator=session(new Admin(),30);
   check(customer.perform(get("/customer/feedback")).andReturn().getResponse().getRedirectedUrl().equals("/login"),"Anonymous customer page redirects to login");
   check(customer.perform(get("/customer/feedback").session(driver)).andReturn().getResponse().getRedirectedUrl().equals("/drivers"),"Driver cannot access customer feedback");
-  check(admin.perform(get("/feedback").session(nimal)).andReturn().getResponse().getRedirectedUrl().equals("/customers"),"Customer cannot access feedback management");
+  check(admin.perform(get("/feedback").session(nimal)).andReturn().getResponse().getRedirectedUrl().equals("/customer/feedback"),"Customer Feedback navbar link opens personal feedback");
   check(admin.perform(get("/feedback").session(administrator)).andReturn().getModelAndView().getViewName().equals("feedback/list"),"Admin can access feedback management");
   items=List.of(item(10),item(11));var mine=customer.perform(get("/customer/feedback").session(nimal)).andReturn();
   check(((List<?>)mine.getModelAndView().getModel().get("feedbackList")).size()==1,"My feedback hides other customers' feedback");
-  check(customer.perform(get("/customer/feedback/new").param("rideId","2").session(nimal)).andReturn().getResponse().getRedirectedUrl().equals("/customer/rides"),"GET rejects another customer's booking");
+  check(customer.perform(get("/customer/feedback/new").param("rideId","2").session(nimal)).andReturn().getResponse().getRedirectedUrl().equals("/customer/feedback"),"GET rejects another customer's booking");
   check(customer.perform(get("/customer/feedback/new").param("rideId","1").session(nimal)).andReturn().getModelAndView().getViewName().equals("portal/feedback-form"),"GET accepts own booking");
   var wrong=customer.perform(valid().param("bookingId","2").session(nimal)).andReturn();check(errors(wrong).containsKey("bookingId"),"POST rejects another customer's booking");
   var empty=customer.perform(post("/customer/feedback").param("subject","").param("message","").session(nimal)).andReturn();

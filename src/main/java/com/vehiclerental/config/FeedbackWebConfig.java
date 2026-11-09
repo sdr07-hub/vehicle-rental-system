@@ -34,7 +34,7 @@ public class FeedbackWebConfig implements WebMvcConfigurer {
                 if (!requiredRole.equals(role)) {
                     String home = "ADMIN".equals(role) ? "/admin"
                             : "DRIVER".equals(role) ? "/drivers"
-                            : "CUSTOMER".equals(role) ? "/customers" : "/login";
+                            : "CUSTOMER".equals(role) ? "/customer/feedback" : "/login";
                     response.sendRedirect(request.getContextPath() + home);
                     return false;
                 }
