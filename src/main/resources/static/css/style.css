@@ -1,4 +1,50 @@
-/* Shared styles for the whole website (Bootstrap does most of the work). */
+/* ===== Typography and eye-friendly theme ===== */
+:root {
+    --brand-blue: #1e3a8a;
+    --brand-ink: #1f2937;
+    --soft-bg: #f4f6fb;
+}
+
+body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--brand-ink);
+    background-color: var(--soft-bg);
+}
+
+h1, h2, h3, h4, h5, .navbar-brand {
+    font-family: "Poppins", "Inter", sans-serif;
+    letter-spacing: -0.01em;
+}
+
+h1 { font-size: 2.6rem; font-weight: 800; }
+h2 { font-size: 2rem; font-weight: 700; }
+h3 { font-size: 1.5rem; font-weight: 700; }
+
+.navbar-brand { font-size: 1.3rem; }
+.navbar-nav .nav-link { font-size: 1.05rem; font-weight: 500; }
+
+.card {
+    border: 1px solid #e5e7eb;
+    border-radius: 1rem;
+}
+
+.btn {
+    font-weight: 600;
+    border-radius: 0.6rem;
+    padding: 0.55rem 1.1rem;
+}
+
+.form-control, .form-select {
+    font-size: 1.05rem;
+    border-radius: 0.6rem;
+    padding: 0.6rem 0.8rem;
+}
+
+.table { font-size: 1.02rem; }
+
+/* ===== Shared styles for the whole website ===== */
 
 /* Make tables easier to read on small screens */
 .table td,
@@ -31,3 +77,45 @@
     justify-content: space-between;
     margin-bottom: 1.5rem;
 }
+
+/* ===== Start page ===== */
+.hero {
+    background: linear-gradient(135deg, #1e3a8a, #0f172a);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+    padding: 3rem 1.5rem;
+}
+
+.role-card {
+    display: block;
+    height: 100%;
+    background: #fff;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    color: #1f2937;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.role-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.15);
+    color: #1f2937;
+    text-decoration: none;
+}
+
+.role-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background: #e5e7eb;
+    display: block;
+}
+
+.role-body {
+    padding: 1.5rem;
+}
+
+.role-customer .role-body { border-top: 6px solid #2563eb; }
+.role-driver .role-body   { border-top: 6px solid #16a34a; }
+.role-admin .role-body    { border-top: 6px solid #111827; }
