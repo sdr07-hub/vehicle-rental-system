@@ -45,6 +45,7 @@
                         <li class="nav-item"><a class="nav-link" href="/customer/dashboard"><i class="bi bi-grid"></i> Dashboard</a></li>
                         <li class="nav-item"><a class="nav-link" href="/customer/book"><i class="bi bi-plus-circle"></i> Book a ride</a></li>
                         <li class="nav-item"><a class="nav-link" href="/customer/rides"><i class="bi bi-clock-history"></i> My rides</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/customer/feedback"><i class="bi bi-chat-heart"></i> Feedback</a></li>
                     </c:when>
 
                     <%-- Driver --%>
@@ -59,6 +60,7 @@
                         <li class="nav-item"><a class="nav-link" href="/drivers">Drivers</a></li>
                         <li class="nav-item"><a class="nav-link" href="/vehicles">Vehicles</a></li>
                         <li class="nav-item"><a class="nav-link" href="/bookings">Bookings</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/feedback">Feedback</a></li>
                     </c:otherwise>
                 </c:choose>
 

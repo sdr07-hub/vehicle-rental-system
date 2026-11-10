@@ -56,6 +56,11 @@
                                 </c:otherwise>
                             </c:choose>
 
+                            <c:if test="${r.status == 'COMPLETED'}">
+                                <a href="/customer/feedback/new?rideId=${r.bookingId}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-star"></i> Rate ride
+                                </a>
+                            </c:if>
                             <c:if test="${r.status == 'PENDING' or r.status == 'CONFIRMED'}">
                                 <form method="post" action="/customer/rides/${r.bookingId}/cancel"
                                       onsubmit="return confirm('Cancel this ride?');">
